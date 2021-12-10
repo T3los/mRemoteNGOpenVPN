@@ -16,7 +16,7 @@
         If not able to access the logfile, then wait 15 sec and exit.
         
         PS: openvpn folder should be added in PATH or folder location added in the scipt.
-        PS: enable silent connection in OpenVPN-gui.
+        PPS: enable silent connection in OpenVPN-gui.
         
         I lost the game.
  
@@ -36,8 +36,7 @@
         Used to retrieve the username from mRemoteNG.
 
     .PARAMETER p
-        Used to retrieve the password from mRemoteNG. /!\ Special Character Escaping /!\ 
-        Check https://mremoteng.readthedocs.io/en/latest/user_interface/external_tools.html#special-character-escaping for more info.
+        Used to retrieve the password from mRemoteNG.
 
     .PARAMETER w
         Set a wait time in sec, if the script was note able to find the VPN log.
@@ -58,71 +57,54 @@ param (
 ### OPEN VPN
 ####################
 
-function connect_open_VPN{
+function connect_open_VPN {
     $cmd = Get-WmiObject Win32_Process -Filter "name = 'openvpn.exe'" | Select-Object CommandLine
-    if (($cmd -match '(?<=--config \")(?<config>.*?)(?:\.ovpn\")') -and ($config -eq $matches.config)) {exit}
-    else{
+    if (($cmd -match '(?<=--config \")(?<config>.*?)(?:\.ovpn\")') -and ($config -eq $matches.config)) { exit }
+    else {
         openvpn-gui --command connect $config 
         Start-Sleep -Milliseconds  500
         $cmd = Get-WmiObject Win32_Process -Filter "name = 'openvpn.exe'" | Select-Object CommandLine
         if ($cmd -match '(?<=--log \")(?<logpath>.*?)(?:\")') {
-            Get-Content -Path $matches.logpath -Tail 1 -Wait | where {if ($_ -match '(,CONNECTED,SUCCESS)') {exit}}}
-        else{
-            Wait
-            exit}}}
+            Get-Content -Path $matches.logpath -Tail 1 -Wait | Where-Object { if ($_ -match '(,CONNECTED,SUCCESS)') { exit } else { Write-Progress -Activity "Connecting to $config" -CurrentOperation $_ } }
+        }
+        else { Wait; exit }
+    }
+}
 
-function deconnect_open_VPN{
-    If(($askdeco) -and (Select-Xml -Path "$env:APPDATA\mRemoteNG\confCons.xml" -XPath //Node | foreach {if (($_.Node.UserField -eq "$config -askdeco")-and($_.Node.Connected -eq 'true' ) ){$_}})){exit}
-    else{
-        openvpn-gui --command disconnect $config 
-        exit}}
+function deconnect_open_VPN {
+    If (($askdeco) -and (Select-Xml -Path "$env:APPDATA\mRemoteNG\confCons.xml" -XPath //Node | ForEach-Object { if (($_.Node.UserField -eq "$config -askdeco") -and ($_.Node.Connected -eq 'true' ) ) { $_ } })) { exit }
+    else { openvpn-gui --command disconnect $config; exit }
+}
 
 
 ####################
 ### PROGRESS BAR
 ####################
 
-function Wait{
-    $w = $w*10
-    for ($i = 1; $i -le $w; $i++ ){
-        Write-Progress -Activity "Connection..." -Status "$($i/10) sec :" -PercentComplete ($i/$w*100) 
+function Wait {
+    $w = $w * 10
+    for ($i = 1; $i -le $w; $i++ ) {
+        Write-Progress -Activity "Connection without log ..." -Status "$($i/10) sec :" -PercentComplete ($i / $w * 100) 
         Start-Sleep -Milliseconds  100
-    }}
+    }
+}
 
 ####################
 ### START
 ####################
 
-clear
-$pshost = get-host
-$pswindow = $pshost.ui.rawui
-$newsize = $pswindow.windowsize
-$newsize.height = 20
-$newsize.width = 80
-$pswindow.windowsize = $newsize
-$newsize = $pswindow.buffersize
-$newsize.height = 20
-$newsize.width = 80
-$pswindow.buffersize = $newsize
-$newsize = $pswindow.CursorPosition
-$newsize.X = 0
-$newsize.Y = 19
-$pswindow.CursorPosition = $newsize
-                
-Write-Host "        _________   ______   _         _____    ______                "  -BackgroundColor Black 
-Write-Host "       |___   ___| |  ____| | |       /  _  \  / _____\               "  -BackgroundColor Black
-Write-Host "           | |     | |___   | |      |  | |  | | |____                "  -BackgroundColor Black
-Write-Host "           | |     |  ___|  | |      |  | |  | \____  \               "  -BackgroundColor Black
-Write-Host "           | |     | |____  | |____  |  |_|  |  ____| |               "  -BackgroundColor Black
-Write-Host "           |_|     |______| |______|  \_____/  \______/               "  -BackgroundColor Black
-Write-Host "                                                                      "  -BackgroundColor Black
-Write-Host ""
+Clear-Host
+Write-Host "`n`n`n`n`n`n`n`n`n  _____ _____ _     ___  ____  `n |_   _| ____| |   / _ \/ ___| `n   | | |  _| | |  | | | \___ \ `n   | | | |___| |___ |_| |___) |`n   |_| |_____|_____\___/|____/ `n`n"  
 
-If (!$deco){
-    Switch ($vpn){
-        "openVPN"{connect_open_VPN}
-        "Other VPN"{exit}}}
-Else{
-    Switch ($vpn){
-        "openVPN"{deconnect_open_VPN}
-        "Other VPN"{exit}}}
+If (!$deco) {
+    Switch ($vpn) {
+        "openVPN" { connect_open_VPN }
+        "otherVPN" { exit }
+    }
+}
+Else {
+    Switch ($vpn) {
+        "openVPN" { deconnect_open_VPN }
+        "otherVPN" { exit }
+    }
+}
