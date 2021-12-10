@@ -47,7 +47,7 @@ PPS: Enable silent connection in OpenVPN-gui.
 ___
 
 
-|<div style="width:105px">PARAMETER</div>|INFO|
+|<div style="width:115px">PARAMETER</div>|INFO|
 |----------------------------------------|----|
 |-deco|Used for disconnection.|
 |-askdeco|Will prevent the disconnection if there are other connected session in mRemoteNG with the same onfig.|
