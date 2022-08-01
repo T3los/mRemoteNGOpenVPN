@@ -39,9 +39,8 @@ After external tool = Disconnection
 
 ![](img/config.png)
 
-</br>
-PS: OpenVPN folder should be added in `PATH` or the folder location must be added in the script. \ 
-
+\
+PS: OpenVPN folder should be added in `PATH` or the folder location must be added in the script.
 PPS: Enable silent connection in OpenVPN-gui.
 
 ___
@@ -49,13 +48,13 @@ ___
 
 |<div style="width:115px">PARAMETER</div>|INFO|
 |----------------------------------------|----|
-|-deco|Used for disconnection.|
-|-askdeco|Will prevent the disconnection if there are other connected session in mRemoteNG with the same onfig.|
-|-vpn \<string\>|For future improvement, if more vpn can be added.|
-|-config \<string\>|The name of the OpenVPN config.|
-|-u \<string\>|Used to retrieve the username from mRemoteNG.|
-|-p \<string\>|Used to retrieve the password from mRemoteNG. </br>**/!\ Special Character Escaping /!\\**. Check [doc](https://mremoteng.readthedocs.io/en/latest/user_interface/external_tools.html#special-character-escaping) for more info.|
-|-w \<int\>|Set a wait time in sec if the script was not able to find the VPN log. Default is 15 sec.|
+|-deco              |Used for disconnection.|
+|-askdeco           |Will prevent the disconnection if there are other connected session in mRemoteNG with the same onfig.|
+|-vpn \<string\>    |For future improvement, if more vpn can be added.|
+|-config \<string\> |The name of the OpenVPN config.|
+|-u \<string\>      |Used to retrieve the username from mRemoteNG.|
+|-p \<string\>      |Used to retrieve the password from mRemoteNG. </br>**/!\ Special Character Escaping /!\\**. Check [doc](https://mremoteng.readthedocs.io/en/latest/user_interface/external_tools.html#special-character-escaping) for more info.|
+|-w \<int\>         |Set a wait time in sec if the script was not able to find the VPN log. Default is 15 sec.|
         
     
 I lost the game.

@@ -65,7 +65,7 @@ function connect_open_VPN {
         Start-Sleep -Milliseconds  500
         $cmd = Get-WmiObject Win32_Process -Filter "name = 'openvpn.exe'" | Select-Object CommandLine
         if ($cmd -match '(?<=--log \")(?<logpath>.*?)(?:\")') {
-            Get-Content -Path $matches.logpath -Tail 1 -Wait | Where-Object { if ($_ -match '(,CONNECTED,SUCCESS)') { exit } else { Write-Progress -Activity "Connecting to $config" -CurrentOperation $_ } }
+            Get-Content -Path $matches.logpath -Tail 1 -Wait | Where-Object { if ($_ -match '(,CONNECTED,SUCCESS|Initialization Sequence Completed)') { exit } else { Write-Progress -Activity "Connecting to $config" -CurrentOperation $_ } }
         }
         else { Wait; exit }
     }
@@ -73,7 +73,7 @@ function connect_open_VPN {
 
 function deconnect_open_VPN {
     If (($askdeco) -and (Select-Xml -Path "$env:APPDATA\mRemoteNG\confCons.xml" -XPath //Node | ForEach-Object { if (($_.Node.UserField -eq "$config -askdeco") -and ($_.Node.Connected -eq 'true' ) ) { $_ } })) { exit }
-    else { openvpn-gui --command disconnect $config; exit }
+    else {  ; exit }
 }
 
 
