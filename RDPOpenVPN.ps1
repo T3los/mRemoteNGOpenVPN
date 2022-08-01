@@ -73,7 +73,7 @@ function connect_open_VPN {
 
 function deconnect_open_VPN {
     If (($askdeco) -and (Select-Xml -Path "$env:APPDATA\mRemoteNG\confCons.xml" -XPath //Node | ForEach-Object { if (($_.Node.UserField -eq "$config -askdeco") -and ($_.Node.Connected -eq 'true' ) ) { $_ } })) { exit }
-    else {  ; exit }
+    else { openvpn-gui --command disconnect $config ; exit }
 }
 
 
